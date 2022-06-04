@@ -61,7 +61,7 @@ const MainTab = () => {
             }} 
             />
             <Tab.Screen
-            name = '랭킹'
+            name = '추천'
             component={Rank}
             options={{
                 tabBarIcon: ({ focused }) =>

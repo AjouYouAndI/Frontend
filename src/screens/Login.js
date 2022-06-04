@@ -28,8 +28,8 @@ const ErrorText = styled.Text`
 `;
 
 const Login = ({ navigation }) => {
-    const { dispatch } = useContext(UserContext);
-    const { spinner } = useContext(ProgressContext);
+    const { spinner, setLogin } = useContext(ProgressContext);
+    const {setUserEmail} = useContext(UserContext);
     
     const insets = useSafeAreaInsets();
     const [email, setEmail] = useState('');
@@ -37,6 +37,7 @@ const Login = ({ navigation }) => {
     const passwordRef = useRef();
     const [errorMessage, setErrorMessage] = useState('');
     const [disabled, setDisabled] = useState(true);
+
 
     const postApi = async () => {
       let fixedUrl = 'http://3.39.39.31:8080'+'/users/auth/signin'; 
@@ -86,15 +87,14 @@ const Login = ({ navigation }) => {
     };
 
     const _handleLoginButtonPress = async () => {
+        console.log("login bt click: "+email);
+        setUserEmail(email);
         try {
           spinner.start();
-          const user = await postApi();
-          dispatch(user);
-          console.log("user"+user);
-          if(!user){
-            Alert.alert('로그인 에러');
-          }else{
-            navigation.navigate()
+          // let res = await postApi();
+          let res = true;
+          if(res) {
+            setLogin.login();
           }
         } catch (e) {
           Alert.alert('로그인 에러', e.message);

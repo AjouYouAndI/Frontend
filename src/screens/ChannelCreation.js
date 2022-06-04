@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
 import { ProgressContext } from '../contexts';
-import { createChannel } from '../utils/firebase';
 import styled from 'styled-components/native';
 import { Input, Button } from '../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -9,7 +8,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.background};
-  justify-content: center;
   align-items: center;
   padding: 0 20px;
 `;
@@ -41,14 +39,14 @@ const ChannelCreation = ({ navigation }) => {
   };
 
   const _handleCreateButtonPress = async () => {
-    try {
-      spinner.start();
-      const id = await createChannel({ location, title, description });
-    } catch (e) {
-      Alert.alert('Creation Error', e.message);
-    } finally {
-      spinner.stop();
-    }
+    // try {
+    //   spinner.start();
+      
+    // } catch (e) {
+    //   Alert.alert('Creation Error', e.message);
+    // } finally {
+    //   spinner.stop();
+    // }
   };
 
   return (
@@ -57,10 +55,6 @@ const ChannelCreation = ({ navigation }) => {
       extraScrollHeight={20}
     >
       <Container>
-        <Input
-          label="작성 위치"
-          placeholder="..."
-        />
         <Input
           label="제목"
           value={title}
@@ -76,7 +70,7 @@ const ChannelCreation = ({ navigation }) => {
         />
         <Input
           ref={descriptionRef}
-          label="감정 및 설명"
+          label="글 내용"
           value={description}
           onChangeText={text => setDescription(text)}
           onSubmitEditing={() => {
@@ -84,7 +78,7 @@ const ChannelCreation = ({ navigation }) => {
             _handleCreateButtonPress();
           }}
           onBlur={() => setDescription(description.trim())}
-          placeholder="감정 및 설명을 쓰시오."
+          placeholder="공유하고 싶은 글을 작성하시오."
           returnKeyType="done"
           maxLength={80}
         />
