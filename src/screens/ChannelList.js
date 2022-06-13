@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import styled, { ThemeContext } from 'styled-components/native';
 import { FlatList, Text } from 'react-native';
 import { MaterialIcons, FontAwesome5} from '@expo/vector-icons';
+import { ProgressContext, UserContext } from '../contexts';
 
 const Container = styled.View`
     flex: 1;
@@ -38,9 +39,27 @@ const EmoCon = styled.View`
     justify-content: center;
 `;
 
+const getEmtionSticker = (type) => {
+    switch(type) {
+        case 'HORROR':
+            return "dizzy";
+        case 'FRIGHTEN':
+            return "surprise";
+        case 'ANGRY':
+            return "angry";
+        case 'SAD':
+            return "sad-tear";
+        case 'HAPPY':
+            return "grin-beam";
+        case 'HATE':
+            return "grimace";
+        default:
+            return "meh-blank";
+    }
+};
 
 const Item = React.memo(
-    ({ item: { id, title, description, emotion}, onPress }) => {
+    ({ item: { id, title, content, emotionType}, onPress }) => {
         const theme = useContext(ThemeContext);
         console.log(`Item: ${id}`);
 
@@ -48,10 +67,10 @@ const Item = React.memo(
             <ItemContainer onPress={() => onPress({ id, title })}>
                 <ItemTextContainer>
                     <ItemTitle>{title}</ItemTitle>
-                    <ItemDescription style={{marginRight: 10}}>{description}</ItemDescription>
+                    <ItemDescription style={{marginRight: 10}}>{content}</ItemDescription>
                 </ItemTextContainer>
                 <EmoCon><FontAwesome5
-                name={emotion}
+                name={getEmtionSticker(emotionType)}
                 size={24}
                 color={theme.listIcon}
                 />
@@ -62,16 +81,55 @@ const Item = React.memo(
 );
 
 const ChannelList = ({ navigation }) => {
+
+    const {userRegion, userLati, userLongi, baseUrl} = useContext(UserContext);
+    const [data, setData] = useState([]);
+
     const _handleItemPress = params => {
         // navigation.navigate('Channel', params);
     };
 
+    const getPostsApi = async (lati, longi) => {
+        let fixedUrl = baseUrl+'/posts/around?lati='+lati+"&longi="+longi; 
+    
+        let options = {
+            method: 'GET', // Get 조회 //Post 값을 보낼때 
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        };
+      
+        try {
+            let response = await fetch(fixedUrl, options);
+            let res = await response.json();
+            console.log("data는?")
+            console.log(res)
+           
+            let result = res["success"];
+            if(result !== true) {
+              return false
+            }else{
+              setData(res.list);
+              return true
+            }
+            
+          } catch (error) {
+            console.error(error);
+          }
+      };
+
+    useEffect(() => {
+        getPostsApi(userLati, userLongi);
+    }, [navigation]);
+
+
     return (
         <Container>
-            <Text style={{marginLeft: 15}}>현위치 :  원천동</Text>
+            <Text style={{marginLeft: 15}}>현위치 :  {userRegion}</Text>
             <FlatList
-            keyExtractor={item => item['id'].toString()}
-            data={channels}
+            keyExtractor={item => item['title'].toString()}
+            data={data}
             renderItem={({ item }) => (
                 <Item item={item} onPress={_handleItemPress} />
             )}

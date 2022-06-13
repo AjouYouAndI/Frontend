@@ -1,7 +1,6 @@
 import App from './src/App';
 import React from 'react';
 import * as Location from 'expo-location';
-import { async } from '@firebase/util';
 import { Alert } from 'react-native-web';
 
 export default class extends React.Component {

@@ -23,9 +23,9 @@ const ErrorText = styled.Text`
   color: ${({ theme }) => theme.errorText};
 `;
 
-const Signup = () => {
-    const { spinner, setLogin} = useContext(ProgressContext);
-    
+const Signup = ({navigation}) => {
+    const { spinner} = useContext(ProgressContext);
+    const { baseUrl} = useContext(UserContext);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -41,7 +41,7 @@ const Signup = () => {
     const [photoUrl, setPhotoUrl] = useState(images.photo);
 
     const postApi = async () => {
-        let fixedUrl = 'http://3.39.39.31:8080'+'/users/auth/signup'; 
+        let fixedUrl = baseUrl+'/users/auth/signup'; 
         let Info;
             Info = {
                 "email": email,
@@ -82,10 +82,9 @@ const Signup = () => {
     const _handleSignupButtonPress = async () => {
         try {
           spinner.start();
-          // let res = await postApi();
-          let res = true;
+          let res = await postApi();
           if(res) {
-            setLogin.login();
+            navigation.navigate("Login");
           }
         } catch (e) {
           Alert.alert('Signup Error', e.message);

@@ -76,7 +76,7 @@ const Item = React.memo(
 
 const Profile = () => {
     const { spinner, setLogin } = useContext(ProgressContext);
-    const {userEmail} = useContext(UserContext);
+    const {userEmail, userName} = useContext(UserContext);
     const theme = useContext(ThemeContext);
 
     useEffect(() => {
@@ -118,7 +118,7 @@ const Profile = () => {
             showButton
             rounded
             />
-            <Input label="Name" value={"name"} disabled />
+            <Input label="Name" value={userName} disabled />
             <Input label="Email" value={userEmail} disabled />
             <Button 
             title="logout" 
