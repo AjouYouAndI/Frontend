@@ -36,7 +36,11 @@ const MainTab = () => {
                     focused,
                     name: focused ? 'chat-bubble' : 'chat-bubble-outline',
                 }),
+                unmountOnBlur: true
             }}
+            listeners={({ navigation }) => ({
+                blur: () => navigation.setParams({ screen: undefined }),
+              })}
             />
             <Tab.Screen 
             name = "마이페이지" 
@@ -47,7 +51,11 @@ const MainTab = () => {
                     focused,
                     name: focused ? 'person' : 'person-outline',
                 }),
-            }} 
+                unmountOnBlur: true
+            }}
+            listeners={({ navigation }) => ({
+                blur: () => navigation.setParams({ screen: undefined }),
+              })}
             />
             <Tab.Screen
             name = '글 작성'
@@ -58,10 +66,14 @@ const MainTab = () => {
                     focused,
                     name: focused ? 'add-circle' : 'add-circle-outline',
                 }),
-            }} 
+                unmountOnBlur: true
+            }}
+            listeners={({ navigation }) => ({
+                blur: () => navigation.setParams({ screen: undefined }),
+              })}
             />
             <Tab.Screen
-            name = '랭킹'
+            name = '추천'
             component={Rank}
             options={{
                 tabBarIcon: ({ focused }) =>
@@ -69,7 +81,11 @@ const MainTab = () => {
                     focused,
                     name: focused ? 'recommend' : 'recommend',
                 }),
-            }} 
+                unmountOnBlur: true
+            }}
+            listeners={({ navigation }) => ({
+                blur: () => navigation.setParams({ screen: undefined }),
+              })}
             />
         </Tab.Navigator>
     );

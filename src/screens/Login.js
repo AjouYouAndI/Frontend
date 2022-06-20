@@ -7,6 +7,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { validateEmail, removeWhitespace } from '../utils/common';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Alert } from 'react-native';
+import * as Location from 'expo-location';
 
 const Container = styled.View`
     flex: 1;
@@ -28,8 +29,8 @@ const ErrorText = styled.Text`
 `;
 
 const Login = ({ navigation }) => {
-    const { dispatch } = useContext(UserContext);
-    const { spinner } = useContext(ProgressContext);
+    const { spinner, setLogin } = useContext(ProgressContext);
+    const {setUserEmail, setUserName, baseUrl, setRToken, setToken, setUserLongi, setUserLati ,setUserRegion} = useContext(UserContext);
     
     const insets = useSafeAreaInsets();
     const [email, setEmail] = useState('');
@@ -38,8 +39,56 @@ const Login = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [disabled, setDisabled] = useState(true);
 
+    useEffect(() => {
+      geoLocation();
+    }, []);
+
+    const getRegionApi = async (lati, longi) => {
+      let fixedUrl = baseUrl+'/posts/geo?lati='+lati+"&longi="+longi; 
+  
+      let options = {
+          method: 'GET', // Get 조회 //Post 값을 보낼때 
+          headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+          },
+      };
+    
+      try {
+          console.log(fixedUrl);
+          let response = await fetch(fixedUrl, options);
+          let res = await response.json();
+          console.log(res)
+         
+          let result = res["success"];
+          if(result !== true) {
+            return false
+          }else{
+            console.log(res.data);
+            setUserRegion(res.data);
+            return true
+          }
+          
+        } catch (error) {
+          console.error(error);
+        }
+    };
+
+    const geoLocation = async() => {
+      try{
+          const location = await Location.getCurrentPositionAsync();
+          const {coords} = location;
+          setUserLati(coords.latitude);
+          setUserLongi(coords.longitude);
+          let res = await getRegionApi(coords.latitude, coords.longitude);
+          return res;
+      } catch(error) {
+          Alert.alert("위치를 찾을 수 없습니다.")
+      }
+  }
+
     const postApi = async () => {
-      let fixedUrl = 'http://3.39.39.31:8080'+'/users/auth/signin'; 
+      let fixedUrl = baseUrl+'/users/auth/signin'; 
       let Info;
           Info = {
               "email": email,
@@ -57,12 +106,60 @@ const Login = ({ navigation }) => {
       };
     
       try {
+          console.log(fixedUrl)
           let response = await fetch(fixedUrl, options);
           let res = await response.json();
           console.log(res);
          
-          return res["success"];
+          let result = res["success"];
+          if(result !== true) {
+            return false
+          }else{
+            let aceessToken = res.data.accessToken;
+            let refreshToken = res.data.refreshToken;
+            setToken(aceessToken);
+            setRToken(refreshToken);
+            let getRes = await getApi(aceessToken);
+            if(getRes==true){
+              return true
+            }else{
+              return false
+            }
+          }
           
+        } catch (error) {
+          console.error(error);
+        }
+  
+  }
+
+    const getApi = async (accessToken) => {
+      let fixedUrl = baseUrl+'/users/user'; 
+  
+      let options = {
+          method: 'GET', // Get 조회 //Post 값을 보낼때 
+          headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'X-AUTH-TOKEN' : accessToken
+          },
+      
+      };
+    
+      try {
+          let response = await fetch(fixedUrl, options);
+          let res = await response.json();
+          console.log(res);
+          console.log(options)
+         
+          let result = res["success"];
+          if(result !== true) {
+            return false
+          }else{
+            setUserEmail(res.data.email)
+            setUserName(res.data.name)
+            return true
+          }
           
         } catch (error) {
           console.error(error);
@@ -86,15 +183,13 @@ const Login = ({ navigation }) => {
     };
 
     const _handleLoginButtonPress = async () => {
+        console.log("login bt click: "+email);
+        setUserEmail(email);
         try {
           spinner.start();
-          const user = await postApi();
-          dispatch(user);
-          console.log("user"+user);
-          if(!user){
-            Alert.alert('로그인 에러');
-          }else{
-            navigation.navigate()
+          let res = await postApi();
+          if(res) {
+            setLogin.login();
           }
         } catch (e) {
           Alert.alert('로그인 에러', e.message);

@@ -1,10 +1,9 @@
 {
   "expo": {
-    "name": "react-native-simple-chat",
-    "slug": "react-native-simple-chat",
+    "name": "youandi",
+    "slug": "youandi",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -17,13 +16,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "org.youandi.youandi",
+      "buildNumber": "1.0.0"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      }
+      "package": "org.youandi.youandi",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"

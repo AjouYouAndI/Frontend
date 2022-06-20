@@ -6,7 +6,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { validateEmail, removeWhitespace } from '../utils/common';
 import { images } from '../utils/images';
 import { Alert } from 'react-native';
-import { signup } from '../utils/firebase';
 
 const Container = styled.View`
     flex: 1;
@@ -24,10 +23,9 @@ const ErrorText = styled.Text`
   color: ${({ theme }) => theme.errorText};
 `;
 
-const Signup = () => {
-    const { dispatch } = useContext(UserContext);
-    const { spinner } = useContext(ProgressContext);
-    
+const Signup = ({navigation}) => {
+    const { spinner} = useContext(ProgressContext);
+    const { baseUrl} = useContext(UserContext);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -43,7 +41,7 @@ const Signup = () => {
     const [photoUrl, setPhotoUrl] = useState(images.photo);
 
     const postApi = async () => {
-        let fixedUrl = 'http://3.39.39.31:8080'+'/users/auth/signup'; 
+        let fixedUrl = baseUrl+'/users/auth/signup'; 
         let Info;
             Info = {
                 "email": email,
@@ -84,8 +82,10 @@ const Signup = () => {
     const _handleSignupButtonPress = async () => {
         try {
           spinner.start();
-          const user = await postApi();
-          dispatch(user);
+          let res = await postApi();
+          if(res) {
+            navigation.navigate("Login");
+          }
         } catch (e) {
           Alert.alert('Signup Error', e.message);
         } finally {

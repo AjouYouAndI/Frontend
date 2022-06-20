@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
-import { ProgressContext } from '../contexts';
-import { createChannel } from '../utils/firebase';
+import { ProgressContext, UserContext } from '../contexts';
 import styled from 'styled-components/native';
 import { Input, Button } from '../components';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -9,7 +8,6 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.background};
-  justify-content: center;
   align-items: center;
   padding: 0 20px;
 `;
@@ -24,7 +22,7 @@ const ErrorText = styled.Text`
 
 const ChannelCreation = ({ navigation }) => {
   const { spinner } = useContext(ProgressContext);
-
+  const {baseUrl, userLati, userLongi, token} = useContext(UserContext);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const descriptionRef = useRef();
@@ -40,10 +38,88 @@ const ChannelCreation = ({ navigation }) => {
     setErrorMessage(title.trim() ? '' : 'Please enter the title.');
   };
 
+  const postApi = async () => {
+    let fixedUrl = baseUrl+'/posts'; 
+    let Info;
+        Info = {
+           "latitude": userLati,
+           "longitude": userLongi,
+           "content": description,
+           "title": title
+          }
+
+    let options = {
+        method: 'POST', // Get 조회 //Post 값을 보낼때 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-AUTH-TOKEN': token,
+        },
+        body: JSON.stringify( Info ),
+    
+    };
+  
+    try {
+        let response = await fetch(fixedUrl, options);
+        let res = await response.json();
+        console.log(res);
+        return res;
+        
+        
+      } catch (error) {
+        console.error(error);
+      }
+
+}
+
+ const getEmoMent = (type) => {
+  switch(type) {
+    case 'HORROR':
+        return "오늘의 조용한 곳인 분당구 백현동을 가보는 것은 어떨까요?";
+    case 'FRIGHTEN':
+        return "오늘의 조용한 곳인 분당구 백현동을 가보는 것은 어떨까요?";
+    case 'ANGRY':
+        return "오늘의 조용한 곳인 분당구 백현동을 가보는 것은 어떨까요?";
+    case 'SAD':
+        return "오늘의 긍정적인 곳인 영통구 하동을 가보는 것은 어떨까요?";
+    case 'HAPPY':
+        return "오늘의 긍정적인 곳인 영통구 하동을 가보는 것은 어떨까요?";
+    case 'HATE':
+        return "오늘의 긍정적인 곳인 영통구 하동을 가보는 것은 어떨까요?";
+    default:
+        return "오늘의 시끌벅적한 곳인 강남구 역삼동을 가보는 것은 어떨까요?";
+  }
+ }
+
+ const getEmo = (type) => {
+  switch(type) {
+    case 'HORROR':
+        return "공포";
+    case 'FRIGHTEN':
+        return "놀람";
+    case 'ANGRY':
+        return "분노";
+    case 'SAD':
+        return "슬픔";
+    case 'HAPPY':
+        return "행복";
+    case 'HATE':
+        return "증오";
+    default:
+        return "중립";
+  }
+ }
+
   const _handleCreateButtonPress = async () => {
     try {
       spinner.start();
-      const id = await createChannel({ location, title, description });
+      let res = await postApi();
+      if(res.success===true) {
+        let emo = res.data.emotionType;
+        setDescription("");
+        setTitle("");
+        Alert.alert(getEmo(emo),getEmoMent(emo));
+      }
     } catch (e) {
       Alert.alert('Creation Error', e.message);
     } finally {
@@ -57,10 +133,6 @@ const ChannelCreation = ({ navigation }) => {
       extraScrollHeight={20}
     >
       <Container>
-        <Input
-          label="작성 위치"
-          placeholder="..."
-        />
         <Input
           label="제목"
           value={title}
@@ -76,7 +148,7 @@ const ChannelCreation = ({ navigation }) => {
         />
         <Input
           ref={descriptionRef}
-          label="감정 및 설명"
+          label="글 내용"
           value={description}
           onChangeText={text => setDescription(text)}
           onSubmitEditing={() => {
@@ -84,7 +156,7 @@ const ChannelCreation = ({ navigation }) => {
             _handleCreateButtonPress();
           }}
           onBlur={() => setDescription(description.trim())}
-          placeholder="감정 및 설명을 쓰시오."
+          placeholder="공유하고 싶은 글을 작성하시오."
           returnKeyType="done"
           maxLength={80}
         />

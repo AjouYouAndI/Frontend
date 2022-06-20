@@ -15,7 +15,6 @@ const Container = styled.TouchableOpacity`
 `;
 const Title = styled.Text`
     height: 30px;
-    line-height: 30px;
     font-size: 16px;
     color: ${({ theme, isFilled }) => 
         isFilled ? theme.buttonTitle : theme.buttonUnfilledTitle};
