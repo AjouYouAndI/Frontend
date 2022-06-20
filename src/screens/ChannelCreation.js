@@ -63,7 +63,7 @@ const ChannelCreation = ({ navigation }) => {
         let response = await fetch(fixedUrl, options);
         let res = await response.json();
         console.log(res);
-        return res["success"];
+        return res;
         
         
       } catch (error) {
@@ -72,14 +72,53 @@ const ChannelCreation = ({ navigation }) => {
 
 }
 
+ const getEmoMent = (type) => {
+  switch(type) {
+    case 'HORROR':
+        return "오늘의 조용한 곳인 분당구 백현동을 가보는 것은 어떨까요?";
+    case 'FRIGHTEN':
+        return "오늘의 조용한 곳인 분당구 백현동을 가보는 것은 어떨까요?";
+    case 'ANGRY':
+        return "오늘의 조용한 곳인 분당구 백현동을 가보는 것은 어떨까요?";
+    case 'SAD':
+        return "오늘의 긍정적인 곳인 영통구 하동을 가보는 것은 어떨까요?";
+    case 'HAPPY':
+        return "오늘의 긍정적인 곳인 영통구 하동을 가보는 것은 어떨까요?";
+    case 'HATE':
+        return "오늘의 긍정적인 곳인 영통구 하동을 가보는 것은 어떨까요?";
+    default:
+        return "오늘의 시끌벅적한 곳인 강남구 역삼동을 가보는 것은 어떨까요?";
+  }
+ }
+
+ const getEmo = (type) => {
+  switch(type) {
+    case 'HORROR':
+        return "공포";
+    case 'FRIGHTEN':
+        return "놀람";
+    case 'ANGRY':
+        return "분노";
+    case 'SAD':
+        return "슬픔";
+    case 'HAPPY':
+        return "행복";
+    case 'HATE':
+        return "증오";
+    default:
+        return "중립";
+  }
+ }
+
   const _handleCreateButtonPress = async () => {
     try {
       spinner.start();
       let res = await postApi();
-      if(res===true) {
+      if(res.success===true) {
+        let emo = res.data.emotionType;
         setDescription("");
         setTitle("");
-        Alert.alert('등록 완료','등록하였습니다.');
+        Alert.alert(getEmo(emo),getEmoMent(emo));
       }
     } catch (e) {
       Alert.alert('Creation Error', e.message);

@@ -16,7 +16,7 @@ const Container = styled.View`
     padding: 0 20px;
 `;
 
-const ItemContainer = styled.TouchableOpacity`
+const ItemContainer = styled.View`
   flex-direction: row;
   align-items: center;
   border-bottom-width: 3px;
@@ -51,7 +51,7 @@ const CategoryCon = styled.View`
 
 
 const Item = React.memo(
-    ({ item: { id, title, description, createAt, emotion }, onPress }) => {
+    ({ item: { id, title, description, createAt, emotion }}) => {
         const theme = useContext(ThemeContext);
         console.log(`Item: ${id}`);
 
@@ -110,7 +110,7 @@ const ChannelList = ({ navigation }) => {
                 keyExtractor={item => item['id'].toString()}
                 data={channels[text]}
                 renderItem={({ item }) => (
-                    <Item item={item} onPress={_handleItemPress} />
+                    <Item item={item} />
                 )}
                 windowSize={3}
                 />
@@ -125,7 +125,7 @@ export default ChannelList;
 
 const pholders = ['카테고리 ', '오늘의 긍정적인 장소', '오늘의 시끌벅적 장소', '오늘의 조용한 장소'];
 
-const places = ['눌러봐!', '수원 원천동', '강남', '제주'];
+const places = ['눌러봐!', '영통구 하동', '강남구 역삼동', '분당구 백현동'];
 
 const channels = [
     [],

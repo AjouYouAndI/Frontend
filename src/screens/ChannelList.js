@@ -9,13 +9,19 @@ const Container = styled.View`
     background-color: ${({ theme }) => theme.background};
 `;
 
-const ItemContainer = styled.TouchableOpacity`
+const ItemContainer = styled.View`
   flex-direction: row;
   align-items: center;
   border-bottom-width: 3px;
   border-color: ${({ theme }) => theme.listBorder};
   padding: 15px 20px;
 `;
+
+const MentContainer = styled.View`
+    flex-direction: row;
+    margin-left: 15;
+`;
+
 const ItemTextContainer = styled.View`
   flex: 1;
   flex-direction: column;
@@ -59,12 +65,12 @@ const getEmtionSticker = (type) => {
 };
 
 const Item = React.memo(
-    ({ item: { id, title, content, emotionType}, onPress }) => {
+    ({ item: { id, title, content, emotionType}}) => {
         const theme = useContext(ThemeContext);
         console.log(`Item: ${id}`);
 
         return (
-            <ItemContainer onPress={() => onPress({ id, title })}>
+            <ItemContainer>
                 <ItemTextContainer>
                     <ItemTitle>{title}</ItemTitle>
                     <ItemDescription style={{marginRight: 10}}>{content}</ItemDescription>
@@ -82,12 +88,13 @@ const Item = React.memo(
 
 const ChannelList = ({ navigation }) => {
 
+    const theme = useContext(ThemeContext);
     const {userRegion, userLati, userLongi, baseUrl} = useContext(UserContext);
     const [data, setData] = useState([]);
 
-    const _handleItemPress = params => {
-        // navigation.navigate('Channel', params);
-    };
+    // const _handleItemPress = params => {
+    //     navigation.navigate('Channel', params);
+    // };
 
     const getPostsApi = async (lati, longi) => {
         let fixedUrl = baseUrl+'/posts/around?lati='+lati+"&longi="+longi; 
@@ -127,11 +134,69 @@ const ChannelList = ({ navigation }) => {
     return (
         <Container>
             <Text style={{marginLeft: 15}}>현위치 :  {userRegion}</Text>
+            <MentContainer>
+            <Text style={{marginRight: 5}}>행복</Text>
+            <EmoCon style={{marginRight: 5}}>
+                <FontAwesome5
+                name="grin-beam"
+                size={15}
+                color={theme.listIcon}
+                />
+            </EmoCon>
+            <Text style={{marginRight: 5}}>공포</Text>
+            <EmoCon style={{marginRight: 5}}>
+                <FontAwesome5
+                name="dizzy"
+                size={15}
+                color={theme.listIcon}
+                />
+            </EmoCon>
+            <Text style={{marginRight: 5}}>놀람</Text>
+            <EmoCon style={{marginRight: 5}}>
+                <FontAwesome5
+                name="surprise"
+                size={15}
+                color={theme.listIcon}
+                />
+            </EmoCon>
+            <Text style={{marginRight: 5}}>분노</Text>
+            <EmoCon style={{marginRight: 5}}>
+                <FontAwesome5
+                name="angry"
+                size={15}
+                color={theme.listIcon}
+                />
+            </EmoCon>
+            <Text style={{marginRight: 5}}>슬픔</Text>
+            <EmoCon style={{marginRight: 5}}>
+                <FontAwesome5
+                name="sad-tear"
+                size={15}
+                color={theme.listIcon}
+                />
+            </EmoCon>
+            <Text style={{marginRight: 5}}>혐오</Text>
+            <EmoCon style={{marginRight: 5}}>
+                <FontAwesome5
+                name="grin-beam"
+                size={15}
+                color={theme.listIcon}
+                />
+            </EmoCon>
+            <Text style={{marginRight: 5}}>중립</Text>
+            <EmoCon style={{marginRight: 5}}>
+                <FontAwesome5
+                name="meh-blank"
+                size={15}
+                color={theme.listIcon}
+                />
+            </EmoCon>
+            </MentContainer>
             <FlatList
             keyExtractor={item => item['title'].toString()}
             data={data}
             renderItem={({ item }) => (
-                <Item item={item} onPress={_handleItemPress} />
+                <Item item={item} />
             )}
             windowSize={3}
             />
